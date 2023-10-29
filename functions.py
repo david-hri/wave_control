@@ -5,7 +5,7 @@ from data import *
 import cmath
 from scipy.integrate import quad
 
-from scipy.optimize import minimize_scalar,minimize
+from scipy.optimize import minimize_scalar,minimize,Bounds
 
 
 
@@ -32,7 +32,7 @@ def g2(y,w, amplitude=1.0): # 1 si w in [20,20000], pour modéliser une salle de
     except ValueError as e:
         return str(e)
 
-def g3(y,w, amplitude =1.0,w0=1000,sigma=1,k_sirène=0.1): #sirène , sous la forme d'un signal carr;e
+def g3(y,w, amplitude =1.0,w0=1000,sigma=100,k_sirène=0.1): #sirène , sous la forme d'un signal carr;e
      #la sirène se trouve entre -k_sirène*L et k_sirène*L
     if -k_sirène*L<=y<=k_sirène*L:
         return amplitude *exp(-(w-w0)**2/sigma)
@@ -74,12 +74,21 @@ def e(alpha,w,N,g):
     return result
 
 
+
+
 def optimal_alpha(w,N,g):
-    init=1+1j
-    def optimize_e(alpha):
-        return abs(e(alpha,w,N,g))
-    result = minimize(optimize_e,init)
+    init=[0,0]
+    def optimize_e(xy):
+        x,y=xy
+        return abs(e(x+1j*y,w,N,g))
+    result = minimize(optimize_e,init,method='L-BFGS-B')
     return result
 
 
-print(optimal_alpha(1000,5,g2))
+print(optimal_alpha(1001,15,g3))
+
+
+
+
+
+

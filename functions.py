@@ -39,53 +39,19 @@ def g3(y,w, amplitude =1.0,w0=10000,sigma=1000,k_sirène=1): #sirène , sous la 
     
 
 
-def fourrier_k(g,w,k): #calcul le coefficient k de la transformée de fourrier de g 
-    def gprime(y):
-        return g(y,w) * np.exp(-complex(0,1) * np.pi * k * y /L) #le calcul du coefficient de fourrier nous fait calculer l'intégrale de cette fonction entre -L et L
-    result, error = quad(gprime, -L, L)
-    return result
 
-def compute_fourier_coefficient(g,k, w):
-    # Define the integrand for the Fourier coefficient
+
+def compute_fourier_coefficient(g,k, w): #calcul le coefficient k de la transformée de fourrier de g 
     integrand = lambda y: g(y, w) * np.exp(-1j * k  * y)
-
-    # Perform the integration over the range [-L, L]
     result, _ = quad(integrand, -L, L)
-
-    # Divide by 2*L to compute the coefficient
     ck = complex(result.real / (2 * L), result.imag / (2 * L))
     return ck
 
 
-def calculate_e_k(alpha, w, k,g,A=1,B=1):
-    lambda0=f_lambda0(k,w)
-    lambda1=f_lambda1(k,w)
-    gk=compute_fourier_coefficient(g,k,w)
-    chi=f_chi(k, lambda0, lambda1, gk,alpha)
-    gamma=f_gamma(k, alpha, lambda0,lambda1, gk)
-    if k**2>=Ksi0/eta0*w**2:
-        temp1=chi*chi.conjugate()*(1+np.exp(-2*lambda0*L))+gamma*gamma.conjugate()*(-1+np.exp(2*lambda0*L))
-        temp2=temp1
-        prod=chi*gamma.conjugate()
-        temp1=1/(2*lambda0)*temp1+2*L*prod.real
-        temp1=(A+B*k**2)*temp1
-        temp2=B*lambda0/2*temp2-2*B*lambda0**2*L*prod.real
-        print("ici")
-        
-    if k**2 >= Ksi0 / eta0 * w**2:
-        result = (A + B * k**2) * (L * (abs(chi)**2 + abs(gamma)**2) +
-                 (1j / lambda0) * (chi.conjugate() * gamma * (1 - cmath.exp(-2 * lambda0 * L))))
-        result += B * L * abs(lambda0)**2 * (abs(chi)**2 + abs(gamma)**2) + 1j * B * lambda0 * (chi.conjugate() * gamma * (1 - cmath.exp(-2 * lambda0 * L)))
-    
-    
-    else:
-        result = (A + B * k**2) * (1 / (2 * lambda0) * ((abs(chi)**2 * (1 - cmath.exp(-2 * lambda0 * L))) + (abs(gamma)**2 * (cmath.exp(2 * lambda0 * L) - 1))) + 2 * L * (chi.real * gamma.real))
-        result += B * (lambda0 / 2) * ((abs(chi)**2 * (1 - cmath.exp(-2 * lambda0 * L)) + abs(gamma)**2 * (cmath.exp(2 * lambda0 * L) - 1)) - 2 * B * lambda0**2 * L * (chi.real * gamma.real))
-    return result
 
 
 
-def calculate_e_k2(alpha, w, k,g,A=1,B=1):
+def calculate_e_k2(alpha, w, k,g,A=1,B=1): #calcul des ek avec la formule de l'énoncé
     lambda0=f_lambda0(k,w)
     lambda1=f_lambda1(k,w)
     gk=compute_fourier_coefficient(g,k,w)
@@ -114,7 +80,7 @@ def calculate_e_k2(alpha, w, k,g,A=1,B=1):
         # return result
 
 
-def e(alpha,w,N,g):
+def e(alpha,w,N,g): #somme des ek
     result=0
     for i in range(-N,N+1):
         k=i*np.pi/L
@@ -124,7 +90,7 @@ def e(alpha,w,N,g):
 
 
 
-def optimal_alpha(w,N,g):
+def optimal_alpha(w,N,g): #utilisation du module scipy pour trouver le alpha optimal
     init=[w/10,w/10]
     def optimize_e(xy):
         x,y=xy
@@ -137,7 +103,7 @@ def optimal_alpha(w,N,g):
 
 
 
-def minimise(g,W): #modify the function with the correct source, do not forget to modify the labels as well
+def minimise(g,W): #fonction principale qui donne alpha optimal pour les différents w
     initial_alpha=[1,1.5]
     alpha_real=[]
     alpha_img=[]
@@ -151,9 +117,8 @@ def minimise(g,W): #modify the function with the correct source, do not forget t
         alpha_real.append(result.x[0])
         alpha_img.append(result.x[1])
     
-    #plt.plot(w_range, alpha_real, color='red', label=f'partie Reelle de alpha pour {g.__name__} ')  
-    return alpha_real,alpha_img
 
+    return alpha_real,alpha_img
 
 
 

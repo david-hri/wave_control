@@ -1,9 +1,17 @@
 import numpy as np
 from math import *
 L=10
-sigma=140000
-phi=0.88
-alpha_h=10
+
+#dictionnaire avec les valeurs de phi sigma et alpha_h pour les différents matériau
+dictionnaire = {
+    "foam": [0.99, 14000, 1.02],
+    "pine": [0.54, 35540, 1.22],
+    "oak": [0.67, 197525, 1.36]
+}
+
+
+#toutes ces constantes sont données dans l'énoncé
+phi,sigma,alpha_h=dictionnaire["oak"]
 rho0=1.29
 
 gamma_p=7/5
@@ -15,7 +23,7 @@ a1=sigma*phi**2*gamma_p/(c0**2*rho0*alpha_h)
 eta0=1
 eta1=phi/alpha_h
 
-def f_lambda0(k, omega):
+def f_lambda0(k, omega): #calcul de lambda 0 pour k et w donné
     try:
         if k**2 >= Ksi0 * eta0 * omega**2:
             return np.sqrt(k**2 - Ksi0 / eta0 * omega**2)
@@ -25,11 +33,11 @@ def f_lambda0(k, omega):
         print(k,omega,"erreur")
     
 
-def f_lambda1(k,w):
-    k2=k**2 #holder
+def f_lambda1(k,w): #calcul de lambda 0 pour k et w donné
+    k2=k**2 
     w2=Ksi1/eta1*w**2
     diff=k2-w2
-    var1=(a1/eta1*w)**2 #holder
+    var1=(a1/eta1*w)**2 
     var2=sqrt(diff**2+var1)
     real=sqrt(diff+var2)
     real=1/sqrt(2)*real

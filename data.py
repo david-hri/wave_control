@@ -1,10 +1,11 @@
 import numpy as np
 from math import *
 L=10
-sigma=14000  
-phi=0.99
+sigma=140000
+phi=0.88
+alpha_h=10
 rho0=1.29
-alpha_h=1.02
+
 gamma_p=7/5
 c0=340
 Ksi0=1/c0/c0
